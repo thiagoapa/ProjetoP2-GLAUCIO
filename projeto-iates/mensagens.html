@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MENSAGENS</title>
+    <link rel="shortcut icon" href="images/barco2.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/default.css" />
+    <style>
+.login-form {
+  max-width: 95%;
+  margin: 30px auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+}
+
+.login-form .entry {
+  margin-bottom: 15px;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* TABELA RESPONSIVA */
+.tabela-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+#tabelaMensagens {
+  width: 100%;
+  min-width: 600px; /* Largura mínima antes de rolar */
+  border-collapse: collapse;
+}
+
+#tabelaMensagens th,
+#tabelaMensagens td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  word-break: break-word; /* Quebra palavras longas */
+}
+
+#tabelaMensagens th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+/* PARA TELAS MUITO PEQUENAS (celulares) */
+@media (max-width: 768px) {
+  .login-form {
+    padding: 10px;
+    margin: 15px auto;
+  }
+  
+  #tabelaMensagens th,
+  #tabelaMensagens td {
+    padding: 6px;
+    font-size: 14px;
+  }
+  
+  .button {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+}
+
+/* ESTILOS PARA O TEXTO */
+.nao-visualizada {
+  font-weight: bold !important;
+}
+
+.visualizada {
+  font-weight: normal !important;
+}
+
+/* BOTÕES DE AÇÃO */
+.acoes button {
+  margin: 2px;
+  padding: 6px 10px;
+  font-size: 13px;
+  white-space: nowrap; /* Evita quebra em duas linhas */
+}
+
+.logout-btn {
+  float: right;
+  margin: 10px;
+}
+</style>
+  </head>
+
+  <body>
+    <div class="page">
+    <header>
+      <div id="title">
+        <img src="images/barco1.png" alt="ícone de barco" />
+        <div class="headtitle">
+          <h1>MENSAGENS</h1>
+          <h2>Aluguel de iates</h2>
+
+        </div>
+      </div>
+
+      <nav>
+        <ul class="navmenu">
+          <li><a href="index.html">Página inicial</a></li>
+          <li><a href="aluguel.html">Aluguel de iates</a></li>
+          <li><a href="destinos.html">Destinos</a></li>
+          <li><a href="tripulacao.html">Tripulação</a></li>
+          <li><a href="contato.html" class="accent">Contato</a></li>
+          <li><a href="admin.html">Admin</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <div class="pagtitle">
+        <div class="bgtitle"></div>
+        <h2>MENSAGENS</h2>
+      </div>
+
+
+      <div class="login-form">
+  <!-- Botão de Logout -->
+  <div style="text-align: right; margin-bottom: 20px;">
+    <button id="btnLogout" class="button">Sair</button>
+  </div>
+  
+  <!-- Tabela de Mensagens -->
+  <div id="loading">Carregando mensagens...</div>
+  
+ <div class="tabela-container">
+  <table id="tabelaMensagens">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Mensagem</th>
+        <th class="acoes">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="corpoTabela">
+      <!-- As mensagens aparecerão aqui -->
+    </tbody>
+  </table>
+</div>
+  
+  <div id="semMensagens" style="display:none; text-align:center; padding:20px;">
+    Nenhuma mensagem recebida ainda.
+  </div>
+</div>
+</main>
+    <footer>
+      <p>© 2023 por Luxo aluguel de iates</p>
+    </footer>
+    <script src="js/jquery-3.6.4.min.js"></script>
+    <script src="js/api.js"></script> 
+
+    <script>
+$(document).ready(function() {
+    
+    // 1. FUNÇÃO PARA CARREGAR MENSAGENS
+    function carregarMensagens() {
+    // Sempre buscar da API
+    var mensagens = obterMensagens(); 
+    
+    console.log("Mensagens recebidas da API:", mensagens);
+
+    // Salvar no navegador
+    localStorage.setItem('mensagens_salvas', JSON.stringify(mensagens));
+
+    // Atualizar tabela
+    mostrarNaTabela(mensagens);
+}
+    
+    // 2. FUNÇÃO PARA MOSTRAR NA TABELA
+    function mostrarNaTabela(mensagens) {
+        var corpo = $('#corpoTabela');
+        corpo.empty(); // Limpa
+        
+        if (mensagens.length === 0) {
+            $('#semMensagens').show();
+            $('#tabelaMensagens').hide();
+            $('#loading').hide();
+            return;
+        }
+        
+        // Para cada mensagem
+        mensagens.forEach(function(msg, indice) {
+            // Verifica se já foi visualizada
+            var jaViu = localStorage.getItem('vista_' + indice) === 'sim';
+            
+            // Define estilo (negrito se não visualizada)
+                var classe = jaViu ? 'visualizada' : 'nao-visualizada';
+
+            // Cria linha da tabela
+            var linha = '<tr>' +
+            '<td class="' + classe + '">' + msg.nome + '</td>' +
+            '<td class="' + classe + '">' + msg.email + '</td>' +
+            '<td class="' + classe + '">' + msg.mensagem + '</td>' +
+            '<td class="acoes">' +
+            '<button onclick="marcarComoVista(' + indice + ')" class="button">✔️ Lida</button> ' +
+            '<button onclick="removerMensagem(' + indice + ')" class="button">❌ Excluir</button>' +
+            '</td>' +
+            '</tr>';
+            
+            corpo.append(linha);
+        });
+        
+        // Mostra tabela
+        $('#tabelaMensagens').show();
+        $('#loading').hide();
+        $('#semMensagens').hide();
+    }
+    
+    // 3. FUNÇÃO PARA MARCAR COMO VISUALIZADA (global)
+    window.marcarComoVista = function(indice) {
+        // Pede confirmação
+        if (confirm("Marcar esta mensagem como visualizada?")) {
+            // Marca no localStorage
+            localStorage.setItem('vista_' + indice, 'sim');
+            // Recarrega
+            carregarMensagens();
+        }
+    };
+    
+    // 4. FUNÇÃO PARA EXCLUIR (CORRIGIDA)
+window.removerMensagem = function(indice) {
+    if (confirm("Tem certeza que deseja excluir esta mensagem?")) {
+        // Pega mensagens do localStorage
+        var mensagens = JSON.parse(localStorage.getItem('mensagens_salvas') || '[]');
+        
+        // Remove do array usando índice
+        if (indice >= 0 && indice < mensagens.length) {
+            mensagens.splice(indice, 1);
+            
+            // Salva NOVAMENTE no localStorage
+            localStorage.setItem('mensagens_salvas', JSON.stringify(mensagens));
+            
+            // Remove também do localStorage de visualização
+            // Limpa TODAS as marcações e recomeça
+            for (var i = 0; i < mensagens.length; i++) {
+                localStorage.removeItem('vista_' + i);
+            }
+            
+            // Marca novamente as que estavam visualizadas
+            // (precisa de lógica mais complexa ou usar IDs)
+        }
+        
+        // Recarrega
+        carregarMensagens();
+    }
+};
+    
+    // 5. BOTÃO SAIR
+    $('#btnLogout').click(function() {
+        window.location.href = 'admin.html';
+    });
+    
+    // 6. CARREGAR MENSAGENS AO ABRIR A PÁGINA
+    carregarMensagens();
+    
+    // 7. ATUALIZAR A CADA 30 SEGUNDOS
+    setInterval(carregarMensagens, 30000);
+});
+</script>
+  </body>
+</html>

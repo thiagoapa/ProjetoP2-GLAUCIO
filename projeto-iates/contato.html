@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato</title>
+
+  <link rel="shortcut icon" href="images/barco2.png" type="image/x-icon">
+  <link rel="stylesheet" href="css/default.css">
+
+  <!-- Importações obrigatórias -->
+  <script src="js/jquery-3.6.4.min.js"></script>
+  <script src="js/api.js"></script>
+
+  <style>
+    .login-form {
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .login-form .entry {
+      margin-bottom: 15px;
+    }
+
+    .login-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .login-form input, 
+    .login-form textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <div id="title">
+      <img src="images/barco1.png" alt="ícone de barco" />
+      <div class="headtitle">
+        <h1>Luxo</h1>
+        <h2>Aluguel de iates</h2>
+      </div>
+    </div>
+
+    <nav>
+      <ul class="navmenu">
+        <li><a href="index.html">Página inicial</a></li>
+        <li><a href="aluguel.html">Aluguel de iates</a></li>
+        <li><a href="destinos.html">Destinos</a></li>
+        <li><a href="tripulacao.html">Tripulação</a></li>
+        <li><a href="contato.html" class="accent">Contato</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <div class="pagtitle">
+      <div class="bgtitle"></div>
+      <h2>Fale Conosco</h2>
+    </div>
+
+    <div class="login-form">
+
+      <form id="formContato" onsubmit="return false;">
+        
+        <div class="entry">
+          <label>Nome:</label>
+          <input type="text" id="nome" required>
+        </div>
+
+        <div class="entry">
+          <label>Email:</label>
+          <input type="email" id="email" required>
+        </div>
+
+        <div class="entry">
+          <label>Mensagem:</label>
+          <textarea id="mensagem" rows="5" required></textarea>
+        </div>
+
+        <div class="buttons">
+          <button id="btnEnviar" class="button">Enviar Mensagem</button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </main>
+
+</div>
+
+<footer>
+  <p>© 2023 por Luxo aluguel de iates</p>
+</footer>
+
+<script>
+  $("#btnEnviar").click(function () {
+
+      let nome = $("#nome").val();
+      let email = $("#email").val();
+      let mensagemTxt = $("#mensagem").val();
+
+      let mensagem = {
+          nome: nome,
+          email: email,
+          mensagem: mensagemTxt
+      };
+
+      inserirMensagem(mensagem);
+
+      alert("Mensagem enviada com sucesso!");
+
+      $("#formContato")[0].reset();
+  });
+</script>
+
+</body>
+</html>
